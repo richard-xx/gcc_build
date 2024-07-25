@@ -39,7 +39,7 @@ jobs:
 
             # Install dependencies
             apt-get update
-            apt-get install -y build-essential wget tar xz-utils checkinstall
+            apt-get install -y build-essential wget tar xz-utils checkinstall g++-multilib
 
             # Download and extract GCC source
             wget -nv https://ftpmirror.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.gz
@@ -72,11 +72,11 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: gcc-${{ github.event.inputs.gcc_version }}-${{ env.ARCH }}.tar.gz
-          path: /workspace/gcc-${{ github.event.inputs.gcc_version }}-${{ env.ARCH }}.tar.gz
+          path: gcc-${{ github.event.inputs.gcc_version }}-${{ env.ARCH }}.tar.gz
 
       - name: Upload GCC Package (deb)
         uses: actions/upload-artifact@v2
         with:
           name: gcc-${{ github.event.inputs.gcc_version }}-${{ env.ARCH }}.deb
-          path: /workspace/gcc-${{ github.event.inputs.gcc_version }}-${{ env.ARCH }}.deb
+          path: gcc-${{ github.event.inputs.gcc_version }}-${{ env.ARCH }}.deb
 
