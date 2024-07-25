@@ -58,7 +58,7 @@ jobs:
                          --enable-host-pie \
                          --enable-host-shared \
                          --enable-threads=posix
-            make -j 4
+            make -j 4 >> /dev/null
 
             # Install and package GCC
             make install-strip -j 4 DESTDIR=/workspace/gcc-${GCC_VERSION}-${ARCH}
