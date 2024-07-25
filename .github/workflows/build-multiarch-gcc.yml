@@ -1,0 +1,76 @@
+name: Build and Package Multiarch GCC
+
+on:
+  workflow_dispatch:
+    inputs:
+      gcc_version:
+        description: 'GCC version to build'
+        required: true
+        default: '10.5.0'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        platform: [linux/amd64, linux/arm64, linux/arm/v7]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set environment variables
+        run: |
+          echo "GCC_VERSION=${{ github.event.inputs.gcc_version }}" >> $GITHUB_ENV
+          echo "ARCH=$(echo ${{ matrix.platform }} | cut -d'/' -f2)" >> $GITHUB_ENV
+
+      - name: Build and Run Docker Container
+        run: |
+          docker run --rm --platform ${{ matrix.platform }} -v ${{ github.workspace }}:/workspace ubuntu:16.04 /bin/bash -c "
+            set -e
+            export DEBIAN_FRONTEND=noninteractive
+
+            # Install dependencies
+            apt-get update
+            apt-get install -y build-essential wget tar xz-utils checkinstall
+
+            # Download and extract GCC source
+            wget https://ftpmirror.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.gz
+            tar -xzf gcc-${GCC_VERSION}.tar.gz
+            cd gcc-${GCC_VERSION}
+
+            # Download prerequisites
+            ./contrib/download_prerequisites
+
+            # Configure and build GCC
+            mkdir build
+            cd build
+            ../configure --disable-multilib \
+                         --enable-languages=c,c++ \
+                         --program-suffix=-$(echo $GCC_VERSION | cut -d. -f1) \
+                         --enable-host-pie \
+                         --enable-host-shared \
+                         --enable-threads=posix
+            make -j
+
+            # Install and package GCC
+            make install-strip DESTDIR=/workspace/gcc-${GCC_VERSION}-${ARCH}
+            checkinstall --pkgname=gcc --pkgversion=${GCC_VERSION} --backup=no --deldoc=yes --deldesc=yes --delspec=yes --default make install
+            cp gcc_${GCC_VERSION}*.deb /workspace/gcc-${GCC_VERSION}-${ARCH}.deb
+            cd /workspace
+            tar -cJvf gcc-${GCC_VERSION}-${ARCH}.tar.xz -C gcc-${GCC_VERSION}-${ARCH}/usr/local .
+          "
+
+      - name: Upload GCC Package (tar.gz)
+        uses: actions/upload-artifact@v2
+        with:
+          name: gcc-${{ github.event.inputs.gcc_version }}-${{ env.ARCH }}.tar.gz
+          path: /workspace/gcc-${{ github.event.inputs.gcc_version }}-${{ env.ARCH }}.tar.gz
+
+      - name: Upload GCC Package (deb)
+        uses: actions/upload-artifact@v2
+        with:
+          name: gcc-${{ github.event.inputs.gcc_version }}-${{ env.ARCH }}.deb
+          path: /workspace/gcc-${{ github.event.inputs.gcc_version }}-${{ env.ARCH }}.deb
+
