@@ -24,6 +24,12 @@ jobs:
         run: |
           echo "GCC_VERSION=${{ github.event.inputs.gcc_version }}" >> $GITHUB_ENV
           echo "ARCH=$(echo ${{ matrix.platform }} | cut -d'/' -f2)" >> $GITHUB_ENV
+      
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Build and Run Docker Container
         run: |
