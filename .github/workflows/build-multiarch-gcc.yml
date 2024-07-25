@@ -42,7 +42,7 @@ jobs:
             apt-get install -y build-essential wget tar xz-utils checkinstall
 
             # Download and extract GCC source
-            wget https://ftpmirror.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.gz
+            wget -nv https://ftpmirror.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.gz
             tar -xzf gcc-${GCC_VERSION}.tar.gz
             cd gcc-${GCC_VERSION}
 
@@ -58,11 +58,11 @@ jobs:
                          --enable-host-pie \
                          --enable-host-shared \
                          --enable-threads=posix
-            make -j
+            make -j 4
 
             # Install and package GCC
-            make install-strip DESTDIR=/workspace/gcc-${GCC_VERSION}-${ARCH}
-            checkinstall --pkgname=gcc --pkgversion=${GCC_VERSION} --backup=no --deldoc=yes --deldesc=yes --delspec=yes --default make install
+            make install-strip -j 4 DESTDIR=/workspace/gcc-${GCC_VERSION}-${ARCH}
+            checkinstall --pkgname=gcc --pkgversion=${GCC_VERSION} --backup=no --deldoc=yes --deldesc=yes --delspec=yes --default make install -j 4
             cp gcc_${GCC_VERSION}*.deb /workspace/gcc-${GCC_VERSION}-${ARCH}.deb
             cd /workspace
             tar -cJvf gcc-${GCC_VERSION}-${ARCH}.tar.xz -C gcc-${GCC_VERSION}-${ARCH}/usr/local .
