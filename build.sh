@@ -60,8 +60,12 @@ sed -i "s@http://.*ubuntu.com@http://mirrors.cernet.edu.cn@g" /etc/apt/sources.l
 
 # Install necessary packages
 apt-get update
-apt-get install -y build-essential wget tar xz-utils flex bison g++-multilib
+apt-get install -y build-essential wget tar xz-utils flex bison
 # libgmp-dev libmpfr-dev libmpc-dev
+
+if [[ "$(dpkg --print-architecture)" != arm64 ]]; then 
+    apt --no-install-recommends -qq -y install gcc-multilib g++-multilib ; 
+fi 
 
 # 获取详细的系统架构信息
 # DETAILED_ARCH=$(gcc -dumpmachine 2>/dev/null)
