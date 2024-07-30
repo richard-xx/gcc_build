@@ -5,12 +5,12 @@ export DEBIAN_FRONTEND=noninteractive
 
 # Function to display usage information
 usage() {
-    echo "Usage: \$0 <GCC_VERSION_MAJOR> <GCC_VERSION_MINOR> <GCC_VERSION_PATCH>"
+    echo "Usage: \$0 <GCC_VERSION_MAJOR>.<GCC_VERSION_MINOR>.<GCC_VERSION_PATCH>"
     exit 1
 }
 
 # Check if the correct number of arguments is provided
-if [ $# -ne 3 ]; then
+if [ $# -ne 1 ]; then
     usage
 fi
 
