@@ -68,9 +68,9 @@ apt-get install -y build-essential wget tar xz-utils flex bison g++-multilib
 gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)"
 gen_deb()
 {
-  m4 -P -DVERSION=${GCC_VERSION} -DARCH=${ARCH} -DMAJOR=${GCC_VERSION_MAJOR} control.m4 > ${INSTALL_DIR}/DEBIAN/control
-  m4 -P -DVERSION=${GCC_VERSION} -DDETAILED_ARCH=${gnuArch} postinst.m4 > ${INSTALL_DIR}/DEBIAN/postinst
-  m4 -P -DVERSION=${GCC_VERSION} -DDETAILED_ARCH=${gnuArch} preinst.m4 > ${INSTALL_DIR}/DEBIAN/preinst
+  m4 -P -DVERSION=${GCC_VERSION} -DARCH=${ARCH} -DMAJOR=${GCC_VERSION_MAJOR} /workspace/control.m4 > ${INSTALL_DIR}/DEBIAN/control
+  m4 -P -DVERSION=${GCC_VERSION} -DDETAILED_ARCH=${gnuArch} /workspace/postinst.m4 > ${INSTALL_DIR}/DEBIAN/postinst
+  m4 -P -DVERSION=${GCC_VERSION} -DDETAILED_ARCH=${gnuArch} /workspace/preinst.m4 > ${INSTALL_DIR}/DEBIAN/preinst
   chmod 0755 ${INSTALL_DIR}/DEBIAN/postinst ${INSTALL_DIR}/DEBIAN/preinst
   echo "Built $PKGNAME.deb"
 }
