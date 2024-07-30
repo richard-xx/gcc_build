@@ -32,7 +32,7 @@ jobs:
       - name: Upload GCC Package (tar & deb)
         uses: actions/upload-artifact@v4
         with:
-          name: gcc-${{ github.event.inputs.gcc_version }}-${{ replace(matrix.platform, "linux/", "") }}
+          name: gcc-${{ github.event.inputs.gcc_version }}-${{ replace(matrix.platform, 'linux/', '') }}
           path: |
             gcc-${{ github.event.inputs.gcc_version }}-*.tar.*
             gcc-${{ github.event.inputs.gcc_version }}-*.deb
