@@ -27,7 +27,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build and Run Docker Container
-        run: docker run --rm --platform ${{ matrix.platform }} -v ${{ github.workspace }}:/workspace ubuntu:16.04 /bin/bash build.sh ${{ github.event.inputs.gcc_version }}
+        run: docker run --rm --platform ${{ matrix.platform }} -v ${{ github.workspace }}:/workspace ubuntu:16.04 /bin/bash /workspace/build.sh ${{ github.event.inputs.gcc_version }}
 
       - name: Upload GCC Package (tar.gz)
         uses: actions/upload-artifact@v2
