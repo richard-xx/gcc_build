@@ -29,10 +29,18 @@ jobs:
       - name: Build and Run Docker Container
         run: docker run --rm --platform ${{ matrix.platform }} -v ${{ github.workspace }}:/workspace ubuntu:16.04 /bin/bash /workspace/build.sh ${{ github.event.inputs.gcc_version }}
 
+      - name: Get platform architecture
+        id: get_arch
+        run: echo "::set-output name=arch::${{ matrix.platform }}"
+        
+      - name: Extract architecture
+        id: extract_arch
+        run: echo "::set-output name=arch::${{ steps.get_arch.outputs.arch | split('/') | last }}"
+
       - name: Upload GCC Package (tar & deb)
         uses: actions/upload-artifact@v4
         with:
-          name: gcc-${{ github.event.inputs.gcc_version }}-${{ replace(matrix.platform, 'linux/', '') }}
+          name: gcc-${{ github.event.inputs.gcc_version }}-${{ steps.extract_arch.outputs.arch }}
           path: |
             gcc-${{ github.event.inputs.gcc_version }}-*.tar.*
             gcc-${{ github.event.inputs.gcc_version }}-*.deb
