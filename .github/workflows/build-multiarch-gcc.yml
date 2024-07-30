@@ -19,11 +19,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
-      - name: Set environment variables
-        run: |
-          echo "GCC_VERSION=${{ github.event.inputs.gcc_version }}" >> $GITHUB_ENV
-          echo "ARCH=$(echo ${{ matrix.platform }} | cut -d'/' -f2)" >> $GITHUB_ENV
       
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -32,51 +27,17 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build and Run Docker Container
-        run: |
-          docker run --rm --platform ${{ matrix.platform }} -v ${{ github.workspace }}:/workspace ubuntu:16.04 /bin/bash -c "
-            set -e
-            export DEBIAN_FRONTEND=noninteractive
-
-            # Install dependencies
-            apt-get update
-            apt-get install -y build-essential wget tar xz-utils checkinstall g++-multilib
-
-            # Download and extract GCC source
-            wget -nv https://ftpmirror.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.gz
-            tar -xzf gcc-${GCC_VERSION}.tar.gz
-            cd gcc-${GCC_VERSION}
-
-            # Download prerequisites
-            ./contrib/download_prerequisites
-
-            # Configure and build GCC
-            mkdir build
-            cd build
-            ../configure --disable-multilib \
-                         --enable-languages=c,c++ \
-                         --program-suffix=-$(echo $GCC_VERSION | cut -d. -f1) \
-                         --enable-host-pie \
-                         --enable-host-shared \
-                         --enable-threads=posix
-            make -j 4 >> /dev/null
-
-            # Install and package GCC
-            make install-strip -j 4 DESTDIR=/workspace/gcc-${GCC_VERSION}-${ARCH}
-            checkinstall --pkgname=gcc --pkgversion=${GCC_VERSION} --backup=no --deldoc=yes --deldesc=yes --delspec=yes --default make install -j 4
-            cp gcc_${GCC_VERSION}*.deb /workspace/gcc-${GCC_VERSION}-${ARCH}.deb
-            cd /workspace
-            tar -cJvf gcc-${GCC_VERSION}-${ARCH}.tar.xz -C gcc-${GCC_VERSION}-${ARCH}/usr/local .
-          "
+        run: docker run --rm --platform ${{ matrix.platform }} -v ${{ github.workspace }}:/workspace ubuntu:16.04 /bin/bash build.sh ${{ github.event.inputs.gcc_version }}
 
       - name: Upload GCC Package (tar.gz)
         uses: actions/upload-artifact@v2
         with:
-          name: gcc-${{ github.event.inputs.gcc_version }}-${{ env.ARCH }}.tar.gz
-          path: gcc-${{ github.event.inputs.gcc_version }}-${{ env.ARCH }}.tar.gz
+          name: gcc-${{ github.event.inputs.gcc_version }}.tar.gz
+          path: gcc-${{ github.event.inputs.gcc_version }}-*.tar.gz
 
       - name: Upload GCC Package (deb)
         uses: actions/upload-artifact@v2
         with:
-          name: gcc-${{ github.event.inputs.gcc_version }}-${{ env.ARCH }}.deb
-          path: gcc-${{ github.event.inputs.gcc_version }}-${{ env.ARCH }}.deb
+          name: gcc-${{ github.event.inputs.gcc_version }}.deb
+          path: gcc-${{ github.event.inputs.gcc_version }}-*.deb
 
