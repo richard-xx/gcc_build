@@ -114,17 +114,14 @@ cd build
 make -j 4
 
 # Install GCC to a temporary directory for packaging
-make DESTDIR=$INSTALL_DIR install-strip
+make DESTDIR=$INSTALL_DIR install-strip -j 4
 
-cd /tmp && dpkg-deb --build ${PKGNAME} ${PKGNAME}-${ARCH}.deb
-
-cp ${PKGNAME} ${PKGNAME}-${ARCH}.deb /workspace/
+cd /tmp
+dpkg-deb --build ${PKGNAME} /workspace/${PKGNAME}-${ARCH}.deb
 
 # Create a tar.gz package
 echo "Create a tar.xz package"
-tar -cJf ${PKGNAME}-${ARCH}.tar.xz -C $INSTALL_DIR/usr/local .
-
-cp ${PKGNAME}-${ARCH}.tar.xz /workspace/
+tar -cJf /workspace/${PKGNAME}-${ARCH}.tar.xz -C $INSTALL_DIR/usr/local .
 
 # Cleanup
 # cd ..
