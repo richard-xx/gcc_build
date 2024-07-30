@@ -76,7 +76,7 @@ gen_deb()
   m4 -P -DVERSION=${GCC_VERSION} -DDETAILED_ARCH=${gnuArch} /workspace/postinst.m4 > ${INSTALL_DIR}/DEBIAN/postinst
   m4 -P -DVERSION=${GCC_VERSION} -DDETAILED_ARCH=${gnuArch} /workspace/preinst.m4 > ${INSTALL_DIR}/DEBIAN/preinst
   chmod 0755 ${INSTALL_DIR}/DEBIAN/postinst ${INSTALL_DIR}/DEBIAN/preinst
-  echo "Built $PKGNAME.deb"
+  echo "Built $PKGNAME-${ARCH}.deb"
 }
 
 gen_deb
