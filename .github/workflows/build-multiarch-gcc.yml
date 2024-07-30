@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -29,15 +29,11 @@ jobs:
       - name: Build and Run Docker Container
         run: docker run --rm --platform ${{ matrix.platform }} -v ${{ github.workspace }}:/workspace ubuntu:16.04 /bin/bash /workspace/build.sh ${{ github.event.inputs.gcc_version }}
 
-      - name: Upload GCC Package (tar.gz)
-        uses: actions/upload-artifact@v2
+      - name: Upload GCC Package (tar & deb)
+        uses: actions/upload-artifact@v4
         with:
-          name: gcc-${{ github.event.inputs.gcc_version }}.tar.gz
-          path: gcc-${{ github.event.inputs.gcc_version }}-*.tar.gz
-
-      - name: Upload GCC Package (deb)
-        uses: actions/upload-artifact@v2
-        with:
-          name: gcc-${{ github.event.inputs.gcc_version }}.deb
-          path: gcc-${{ github.event.inputs.gcc_version }}-*.deb
+          name: gcc-${{ github.event.inputs.gcc_version }}
+          path: |
+            gcc-${{ github.event.inputs.gcc_version }}-*.tar.*
+            gcc-${{ github.event.inputs.gcc_version }}-*.deb
 
