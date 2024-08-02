@@ -1,7 +1,8 @@
-#!/bin/sh
-test "$1" = "remove" || exit 0
-dir=/usr/local/lib/gcc/DETAILED_ARCH/VERSION/include-fixed
+#!/bin/bash
 set -ex
-test -d "$dir" && rm -r "$dir"
-cd /usr/local/
-rmdir -p lib/gcc/DETAILED_ARCH/VERSION
+
+# 移除其他目录
+dir=PREFIX/lib/gcc/DETAILED_ARCH/VERSION/include-fixed
+test -d \"\$dir\" && rm -r \"\$dir\"
+cd PREFIX/ || exit
+rmdir -p lib/gcc/DETAILED_ARCH/VERSION || true

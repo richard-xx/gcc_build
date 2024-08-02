@@ -25,6 +25,7 @@ GCC_VERSION_PATCH=$(echo $GCC_VERSION | cut -d. -f3)
 NUM_CORES=$(nproc)
 PKGNAME=gcc-${GCC_VERSION}
 INSTALL_DIR=/tmp/${PKGNAME}
+PREFIX=/usr/local/gcc-$GCC_VERSION_MAJOR
 
 mkdir -p -m 0755 ${INSTALL_DIR}/DEBIAN
 
@@ -72,10 +73,10 @@ fi
 gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)"
 gen_deb()
 {
-  m4 -P -DVERSION=${GCC_VERSION} -DARCH=${ARCH} -DMAJOR=${GCC_VERSION_MAJOR} /workspace/control.m4 > ${INSTALL_DIR}/DEBIAN/control
-  m4 -P -DVERSION=${GCC_VERSION} -DDETAILED_ARCH=${gnuArch} /workspace/postinst.m4 > ${INSTALL_DIR}/DEBIAN/postinst
-  m4 -P -DVERSION=${GCC_VERSION} -DDETAILED_ARCH=${gnuArch} /workspace/preinst.m4 > ${INSTALL_DIR}/DEBIAN/preinst
-  chmod 0755 ${INSTALL_DIR}/DEBIAN/postinst ${INSTALL_DIR}/DEBIAN/preinst
+  m4 -P -DVERSION=${GCC_VERSION} -DPREFIX=${PREFIX} -DARCH=${ARCH} -DMAJOR=${GCC_VERSION_MAJOR} /workspace/control.m4 > ${INSTALL_DIR}/DEBIAN/control
+  m4 -P -DVERSION=${GCC_VERSION} -DPREFIX=${PREFIX} -DDETAILED_ARCH=${gnuArch} /workspace/postinst.m4 > ${INSTALL_DIR}/DEBIAN/postinst
+  m4 -P -DVERSION=${GCC_VERSION} -DPREFIX=${PREFIX} -DDETAILED_ARCH=${gnuArch} /workspace/postrm.m4 > ${INSTALL_DIR}/DEBIAN/postrm
+  chmod 0755 ${INSTALL_DIR}/DEBIAN/postinst ${INSTALL_DIR}/DEBIAN/postrm
   echo "Built $PKGNAME-${ARCH}.deb"
 }
 
@@ -96,6 +97,7 @@ cd build
 # Configure the build
 # --prefix=/usr/local/gcc-$GCC_VERSION_MAJOR
 ../configure --disable-multilib \
+  --prefix=${PREFIX} \
   --enable-languages=c,c++ \
   --program-suffix="-${GCC_VERSION_MAJOR}" \
   --build="$gnuArch" \
