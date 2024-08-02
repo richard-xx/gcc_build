@@ -34,7 +34,7 @@ jobs:
         run: |
           architecture=$(basename ${{ matrix.platform }})
           architecture=${architecture#*/}
-          echo "::set-output name=arch::${architecture}"
+          echo "arch=${architecture}" >> $GITHUB_OUTPUT
 
       - name: Upload GCC Package (tar & deb)
         uses: actions/upload-artifact@v4
