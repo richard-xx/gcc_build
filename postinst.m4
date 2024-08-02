@@ -14,5 +14,5 @@ PREFIX/libexec/gcc/DETAILED_ARCH/VERSION/install-tools/mkheaders
 { echo 'PREFIX/lib64'; echo 'PREFIX/lib'; } >> /etc/ld.so.conf.d/000-local-lib.conf
 
 # 更新动态链接库缓存
-ldconfig -v
+ldconfig -v > /dev/null
 

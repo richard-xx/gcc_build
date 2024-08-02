@@ -108,7 +108,6 @@ cd build
   --enable-checking=release \
   --enable-multiarch \
   --disable-bootstrap \
-  --enable-version-specific-runtime-libs \
   $extraConfigureArgs
 
 
@@ -116,7 +115,7 @@ cd build
 make -j 4
 
 # Install GCC to a temporary directory for packaging
-make DESTDIR=$INSTALL_DIR install-strip -j 4
+make DESTDIR=$INSTALL_DIR install -j 4
 
 cd /tmp
 dpkg-deb --build ${PKGNAME} /workspace/${PKGNAME}-${ARCH}.deb
